@@ -62,7 +62,7 @@ namespace Sequence.WaaS
             _authenticator = new OpenIdAuthenticator(SequenceCoder.KeccakHashASCII(_sessionId).EnsureHexPrefix());
             _authenticator.PlatformSpecificSetup();
             Application.deepLinkActivated += _authenticator.HandleDeepLink;
-            _authenticator.SignedIn += OnSocialLogin;
+            OpenIdAuthenticator.SignedIn += OnSocialLogin;
 
             if (validator == null)
             {
