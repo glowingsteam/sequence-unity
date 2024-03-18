@@ -47,6 +47,14 @@ namespace Sequence.Demo
             }
         }
 
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         private void OnLoginSuccessHandler(string sessionId, string walletAddress)
         {
             Destroy(gameObject);
