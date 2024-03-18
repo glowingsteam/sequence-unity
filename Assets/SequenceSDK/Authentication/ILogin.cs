@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace Sequence.Authentication
@@ -17,6 +18,8 @@ namespace Sequence.Authentication
         public delegate void OnMFAEmailFailedToSendHandler(string email, string error);
 
         public event OnMFAEmailFailedToSendHandler OnMFAEmailFailedToSend;
+
+        public event Action OnIdTokenReceived;
 
         /// <summary>
         /// Attempt to send the user an MFA email

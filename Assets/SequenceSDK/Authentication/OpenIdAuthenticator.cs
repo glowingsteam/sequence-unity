@@ -13,7 +13,7 @@ namespace Sequence.Authentication
     public class OpenIdAuthenticator
     {
         public const string LoginEmail = "LoginEmail";
-        public Action<OpenIdAuthenticationResult> SignedIn;
+        public static Action<OpenIdAuthenticationResult> SignedIn;
         private string _urlScheme;
         
         public static readonly int WINDOWS_IPC_PORT = 52836;

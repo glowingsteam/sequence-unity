@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sequence.Authentication;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -14,6 +15,8 @@ namespace Sequence.Demo
         [SerializeField] [Range(0, 255)] private int _minAlpha = 0;
         [SerializeField] private float _animationSpeed = .1f;
         private LoginPanel _loginPanel;
+
+        private bool _userSignedIn = false;
         
         private const int DefaultFullAlphaValue = 255;
         
@@ -26,6 +29,7 @@ namespace Sequence.Demo
                 _loginPanel.LoginHandler.OnMFAEmailSent += OnMFAEmailSentHandler;
                 _loginPanel.LoginHandler.OnLoginFailed += OnLoginFailedHandler;
                 _loginPanel.LoginHandler.OnMFAEmailFailedToSend += OnMFAEmailFailedToSendHandler;
+                OpenIdAuthenticator.SignedIn += OnSignIn;
             }
             else
             {
@@ -45,14 +49,20 @@ namespace Sequence.Demo
                 _loginPanel.LoginHandler.OnLoginFailed -= OnLoginFailedHandler;
                 _loginPanel.LoginHandler.OnMFAEmailFailedToSend -= OnMFAEmailFailedToSendHandler;
             }
+            OpenIdAuthenticator.SignedIn -= OnSignIn;
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (hasFocus)
+            if (hasFocus && !_userSignedIn)
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void OnSignIn(OpenIdAuthenticationResult result)
+        {
+            _userSignedIn = true;
         }
 
         private void OnLoginSuccessHandler(string sessionId, string walletAddress)

@@ -62,7 +62,7 @@ namespace Sequence.Authentication
                             Debug.LogError(Error);
                         }
                         
-                        authenticator.SignedIn?.Invoke(new OpenIdAuthenticationResult(Token, LoginMethod.Apple));
+                        OpenIdAuthenticator.SignedIn?.Invoke(new OpenIdAuthenticationResult(Token, LoginMethod.Apple));
                     }
                     else
                     {
