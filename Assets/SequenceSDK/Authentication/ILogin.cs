@@ -19,8 +19,6 @@ namespace Sequence.Authentication
 
         public event OnMFAEmailFailedToSendHandler OnMFAEmailFailedToSend;
 
-        public event Action OnIdTokenReceived;
-
         /// <summary>
         /// Attempt to send the user an MFA email
         /// Emits an OnMFAEmailSent event when successful
