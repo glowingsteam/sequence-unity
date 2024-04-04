@@ -16,8 +16,6 @@ namespace Sequence.Demo
         [SerializeField] private float _animationSpeed = .1f;
         private LoginPanel _loginPanel;
         private OpenIdAuthenticator _openIdAuthenticator;
-
-        private bool _userSignedIn = false;
         
         private const int DefaultFullAlphaValue = 255;
         
@@ -33,7 +31,7 @@ namespace Sequence.Demo
                 if (_loginPanel.LoginHandler is OpenIdAuthenticator openIdAuthenticator)
                 {
                     _openIdAuthenticator = openIdAuthenticator;
-                    _openIdAuthenticator.SignedIn += OnSignIn;
+                    _openIdAuthenticator.OnSignInFailed += OnSignInFailed;
                 } 
             }
             else
@@ -57,21 +55,13 @@ namespace Sequence.Demo
 
             if (_openIdAuthenticator != null)
             {
-                _openIdAuthenticator.SignedIn -= OnSignIn;
+                _openIdAuthenticator.OnSignInFailed -= OnSignInFailed;
             }
         }
 
-        private void OnApplicationFocus(bool hasFocus)
+        private void OnSignInFailed(string error)
         {
-            if (hasFocus && !_userSignedIn)
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        private void OnSignIn(OpenIdAuthenticationResult result)
-        {
-            _userSignedIn = true;
+            Destroy(gameObject);
         }
 
         private void OnLoginSuccessHandler(string sessionId, string walletAddress)
