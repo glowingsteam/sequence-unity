@@ -15,6 +15,7 @@ namespace Sequence.Demo
         [SerializeField] [Range(0, 255)] private int _minAlpha = 0;
         [SerializeField] private float _animationSpeed = .1f;
         private LoginPanel _loginPanel;
+        private OpenIdAuthenticator _openIdAuthenticator;
 
         private bool _userSignedIn = false;
         
@@ -29,7 +30,11 @@ namespace Sequence.Demo
                 _loginPanel.LoginHandler.OnMFAEmailSent += OnMFAEmailSentHandler;
                 _loginPanel.LoginHandler.OnLoginFailed += OnLoginFailedHandler;
                 _loginPanel.LoginHandler.OnMFAEmailFailedToSend += OnMFAEmailFailedToSendHandler;
-                OpenIdAuthenticator.SignedIn += OnSignIn;
+                if (_loginPanel.LoginHandler is OpenIdAuthenticator openIdAuthenticator)
+                {
+                    _openIdAuthenticator = openIdAuthenticator;
+                    _openIdAuthenticator.SignedIn += OnSignIn;
+                } 
             }
             else
             {
@@ -49,7 +54,11 @@ namespace Sequence.Demo
                 _loginPanel.LoginHandler.OnLoginFailed -= OnLoginFailedHandler;
                 _loginPanel.LoginHandler.OnMFAEmailFailedToSend -= OnMFAEmailFailedToSendHandler;
             }
-            OpenIdAuthenticator.SignedIn -= OnSignIn;
+
+            if (_openIdAuthenticator != null)
+            {
+                _openIdAuthenticator.SignedIn -= OnSignIn;
+            }
         }
 
         private void OnApplicationFocus(bool hasFocus)
