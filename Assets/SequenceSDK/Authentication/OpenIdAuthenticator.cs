@@ -13,7 +13,8 @@ namespace Sequence.Authentication
     public class OpenIdAuthenticator
     {
         public const string LoginEmail = "LoginEmail";
-        public static Action<OpenIdAuthenticationResult> SignedIn;
+        public Action<OpenIdAuthenticationResult> SignedIn;
+        public Action<string> OnSignInFailed;
         private string _urlScheme;
         
         public static readonly int WINDOWS_IPC_PORT = 52836;
@@ -93,7 +94,7 @@ namespace Sequence.Authentication
             }
             catch (Exception e)
             {
-                Debug.LogError($"Google sign in error: {e.Message}");
+                OnSignInFailed?.Invoke($"Google sign in error: {e.Message}");
             }
         }
 
@@ -118,7 +119,7 @@ namespace Sequence.Authentication
             }
             catch (Exception e)
             {
-                Debug.LogError($"Discord sign in error: {e.Message}");
+                OnSignInFailed?.Invoke($"Discord sign in error: {e.Message}");
             }
         }
 
@@ -136,7 +137,7 @@ namespace Sequence.Authentication
             }
             catch (Exception e)
             {
-                Debug.LogError($"Facebook sign in error: {e.Message}");
+                OnSignInFailed?.Invoke($"Facebook sign in error: {e.Message}");
             }
         }
         
@@ -151,7 +152,7 @@ namespace Sequence.Authentication
                 string appleSignInUrl =
                     GenerateSignInUrl("https://appleid.apple.com/auth/authorize", AppleClientId, nameof(LoginMethod.Apple));
                 appleSignInUrl = appleSignInUrl.RemoveTrailingSlash() + "&response_mode=form_post";
-#if UNITY_IOS || UNITY_STANDALONE_OSX
+#if UNITY_IOS
                 GameObject appleSignInObject = Object.Instantiate(new GameObject());
                 SignInWithApple appleSignIn = appleSignInObject.AddComponent<SignInWithApple>();
                 appleSignIn.LoginToApple(this, _sessionId, _stateToken);
@@ -161,7 +162,7 @@ namespace Sequence.Authentication
             }
             catch (Exception e)
             {
-                Debug.LogError($"Apple sign in error: {e.Message}");
+                OnSignInFailed?.Invoke($"Apple sign in error: {e.Message}");
             }
         }
 
@@ -299,21 +300,21 @@ namespace Sequence.Authentication
             Dictionary<string, string> queryParams = link.ExtractQueryAndHashParameters();
             if (queryParams == null)
             {
-                Debug.LogError($"Unexpected deep link: {link}");
+                OnSignInFailed?.Invoke($"Unexpected deep link: {link}");
                 return;
             }
             if (queryParams.TryGetValue("state", out string state))
             {
                 if (!state.Contains(_stateToken))
                 {
-                    Debug.LogError("State token mismatch");
+                    OnSignInFailed?.Invoke("State token mismatch");
                     return;
                 }
                 method = GetMethodFromState(state);
             }
             else
             {
-                Debug.LogError("State token missing");
+                OnSignInFailed?.Invoke("State token missing");
                 return;
             }
             
@@ -323,7 +324,7 @@ namespace Sequence.Authentication
             }
             else
             {
-                Debug.LogError($"Unexpected deep link: {link}");
+                OnSignInFailed?.Invoke($"Unexpected deep link: {link}");
             }
         }
 

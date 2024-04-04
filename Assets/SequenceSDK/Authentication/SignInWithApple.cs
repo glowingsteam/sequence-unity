@@ -30,17 +30,14 @@ namespace Sequence.Authentication
 
         public void LoginToApple(OpenIdAuthenticator authenticator, string nonce, string state)
         {
-            // Initialize the Apple Auth Manager
             if (m_AppleAuthManager == null)
             {
                 Initialize();
             }
 
-            // Set the login arguments
             var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
                 nonce, state);
 
-            // Perform the login
             m_AppleAuthManager.LoginWithAppleId(
                 loginArgs,
                 credential =>
@@ -59,21 +56,21 @@ namespace Sequence.Authentication
                         {
                             Error =
                                 "Sign-in with Apple error. Message: state token received doesn't match what was given";
-                            Debug.LogError(Error);
+                            authenticator.OnSignInFailed?.Invoke(Error);
                         }
                         
-                        OpenIdAuthenticator.SignedIn?.Invoke(new OpenIdAuthenticationResult(Token, LoginMethod.Apple));
+                        authenticator.SignedIn?.Invoke(new OpenIdAuthenticationResult(Token, LoginMethod.Apple));
                     }
                     else
                     {
                         Error = "Sign-in with Apple error. Message: appleIDCredential is null";
-                        Debug.LogError(Error);
+                        authenticator.OnSignInFailed?.Invoke(Error);
                     }
                 },
                 error =>
                 {
                     Error = "Sign-in with Apple error. Message: " + error;
-                    Debug.LogError(Error);
+                    authenticator.OnSignInFailed?.Invoke(Error);
                 }
             );
         }
